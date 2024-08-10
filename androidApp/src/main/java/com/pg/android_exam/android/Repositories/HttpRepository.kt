@@ -10,6 +10,6 @@ class HttpRepository {
 
     val httpClient = KtorHttpClient
 
-    suspend fun getRequestUserMain(): List<UserMain> =
-        httpClient.httpClient.get(ApiConstants.BASE_RANDOM_URL).body<List<UserMain>>()
+    suspend fun getRequestUserMain(): String =
+        httpClient.httpClient.get(ApiConstants.BASE_RANDOM_URL).body()
 }
