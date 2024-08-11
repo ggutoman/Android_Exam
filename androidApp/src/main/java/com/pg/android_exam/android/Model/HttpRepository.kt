@@ -1,15 +1,15 @@
-package com.pg.android_exam.android.Repositories
+package com.pg.android_exam.android.Model
 
 import com.pg.android_exam.android.Connection.KtorHttpClient
-import com.pg.android_exam.android.Models.ApiConstants
-import com.pg.android_exam.android.Models.UserMain
+import com.pg.android_exam.android.View.ApiConstants
+import com.pg.android_exam.android.View.User
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 
-class HttpRepository {
+object HttpRepository {
 
     val httpClient = KtorHttpClient
 
-    suspend fun getRequestUserMain(): String =
+    suspend fun getRequestUserMain(): User =
         httpClient.httpClient.get(ApiConstants.BASE_RANDOM_URL).body()
 }
