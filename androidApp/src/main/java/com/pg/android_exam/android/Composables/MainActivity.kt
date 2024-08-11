@@ -43,6 +43,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             MyApplicationTheme {
                 Surface(
@@ -64,7 +65,6 @@ class MainActivity : ComponentActivity() {
 
         LaunchedEffect(null) {
 
-
             withContext(Dispatchers.Main){
                 launch {
                     mViewModel.FetchUserList(onResult = {
@@ -80,12 +80,7 @@ class MainActivity : ComponentActivity() {
                 mutableStateOf(userList[0])
             }
 
-            UserListScreen(userList = userList, onItemList = {
-                itemDetail = it
-            })
-
-
-            CreateNav(navDetails = itemDetail).navigate("details")
+            UserListScreen(userList = userList, CreateNav(navDetails = itemDetail))
 
         }
 
@@ -113,7 +108,7 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun UserListScreen(userList: ArrayList<UserData>, onItemList: (UserData) -> Unit){
+    fun UserListScreen(userList: ArrayList<UserData>, navHostController: NavHostController){
 
         LazyColumn(Modifier.fillMaxWidth(), contentPadding = PaddingValues(16.dp)) {
 
@@ -124,8 +119,8 @@ class MainActivity : ComponentActivity() {
                     Modifier
                         .fillMaxSize()
                         .onFocusEvent {
-                            if (hasWindowFocus()) {
-                                onItemList(item)
+                            if (!hasWindowFocus()) {
+                                navHostController.navigate("details")
                             }
                         }) {
 
