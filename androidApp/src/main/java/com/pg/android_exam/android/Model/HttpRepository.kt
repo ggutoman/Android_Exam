@@ -1,6 +1,5 @@
 package com.pg.android_exam.android.Model
 
-import com.pg.android_exam.android.Connection.KtorHttpClient
 import com.pg.android_exam.android.View.ApiConstants
 import com.pg.android_exam.android.View.User
 import io.ktor.client.call.body

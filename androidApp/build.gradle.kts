@@ -70,6 +70,8 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
     implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation("androidx.paging:paging-compose:3.3.2")
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.25.1")
 
     //KTOR DEPENDENCY
     implementation("io.ktor:ktor-client-core:2.3.0") //core dependency
