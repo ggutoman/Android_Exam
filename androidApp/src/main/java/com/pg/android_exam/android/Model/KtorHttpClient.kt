@@ -1,4 +1,4 @@
-package com.pg.android_exam.android.Connection
+package com.pg.android_exam.android.Model
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
@@ -12,7 +12,6 @@ import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 object KtorHttpClient {
