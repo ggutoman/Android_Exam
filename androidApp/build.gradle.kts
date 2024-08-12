@@ -5,6 +5,15 @@ plugins {
 
     //kotlin serializer
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.21"
+
+    //KOTLIN KAPT METHOD
+    id("kotlin-kapt")
+
+    //PARCELIZE METHOD
+    id("org.jetbrains.kotlin.plugin.parcelize")
+
+    //INJECTION DEPENDENCY
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -38,6 +47,18 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    sourceSets {
+        getByName("main") {
+            java {
+                srcDirs("src\\main\\java", "src\\main\\java\\unittest")
+            }
+        }
+    }
+}
+
+// Allow references to generated code
+kapt {
+    correctErrorTypes = true
 }
 
 dependencies {
@@ -48,6 +69,7 @@ dependencies {
     implementation(libs.compose.material3)
     implementation(libs.androidx.activity.compose)
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
 
     //KTOR DEPENDENCY
     implementation("io.ktor:ktor-client-core:2.3.0") //core dependency
@@ -56,7 +78,15 @@ dependencies {
     implementation("io.ktor:ktor-client-logging:2.3.0") //logging
     implementation("io.ktor:ktor-client-android:2.3.0") //http client engine
 
+    //INJECTION DEPENDENCY
+    implementation("com.google.dagger:hilt-android:2.44")
 
+    //INJECTION ANNOTATOR DEPENDENCY
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
+
+    //TESTING DEPENDENCY
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
+    testImplementation("junit:junit:4.13.2")
 
     debugImplementation(libs.compose.ui.tooling)
 }
