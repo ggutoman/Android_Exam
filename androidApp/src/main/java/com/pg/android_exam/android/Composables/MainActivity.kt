@@ -3,21 +3,29 @@ package com.pg.android_exam.android.Composables
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.paddingFromBaseline
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -35,11 +43,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.ConstraintLayoutBaseScope
+import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -100,10 +111,15 @@ class MainActivity : ComponentActivity() {
 
                 withContext(Dispatchers.Main) {
                     launch {
-                        mViewModel.FetchUserList(onResult = {
-                            userList = it
-                            swipeRefresh = false
-                        })
+                        mViewModel.FetchUserList(
+                            onSuccess = {
+                                userList = it
+                                swipeRefresh = false
+                            },
+                            onError = {
+                                Log.d(this::class.simpleName, it)
+                                swipeRefresh = false
+                            })
                     }
                 }
 
@@ -192,12 +208,11 @@ class MainActivity : ComponentActivity() {
                 Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .padding(10.dp, 0.dp)
+                    .padding(10.dp, 100.dp, 10.dp, 0.dp)
                     .constrainAs(cardviewcontent) {
-                        top.linkTo(cardviewheader.top)
                         top.linkTo(cardviewheader.bottom)
-                    }
-                    .paddingFromBaseline(0.dp, 25.dp),
+                        bottom.linkTo(cardviewheader.bottom)
+                    },
                 colors = CardDefaults.elevatedCardColors(
                     containerColor = MaterialTheme.colorScheme.background
                 ),
@@ -209,77 +224,86 @@ class MainActivity : ComponentActivity() {
 
                 LazyColumn(
                     Modifier
-                        .fillMaxWidth()
-                        .padding(0.dp, 10.dp),
-                    contentPadding = PaddingValues(16.dp)) {
+                        .fillMaxWidth(),
+                    contentPadding = PaddingValues(5.dp)) {
 
                     items(userList.itemCount){
                             item ->
 
                         ConstraintLayout(
                             Modifier
-                                .wrapContentHeight()
-                                .fillParentMaxWidth()) {
+                                .fillMaxWidth()) {
 
-                            val(name, birth, email, phone, btn_view) = createRefs()
+                            val(row1, row2, btn_view) = createRefs()
 
                             val userData: UserData = userList[item]!!
 
-                            Text(text = "${userData.name.fname} ${userData.name.lname}",
-                                Modifier
-                                    .constrainAs(name) {
-                                        start.linkTo(parent.start)
-                                        top.linkTo(parent.top)
-                                        bottom.linkTo(birth.bottom)
-                                    }
-                                    .padding(10.dp, 10.dp)
-                                    .width(200.dp)
-                                    .wrapContentHeight())
-
-                            Text(text = DateTimeFormatter.ofPattern("MMMM dd, yyyy")
-                                .format(
-                                    OffsetDateTime
-                                        .parse(userData.birth.birthdate.toString())
-                                ),
-                                Modifier
-                                    .constrainAs(birth) {
-                                        top.linkTo(parent.top)
-                                        bottom.linkTo(name.bottom)
-                                        start.linkTo(name.end)
-                                        end.linkTo(parent.end)
-                                    }
-                                    .padding(10.dp, 10.dp)
-                                    .width(200.dp)
-                                    .wrapContentHeight(),
-                                style = TextStyle(
-                                    textAlign = TextAlign.Center
-                                ))
-
-                            Text(text = userData.email.toString(),
-                                Modifier
-                                    .constrainAs(email) {
-                                        top.linkTo(name.bottom)
-                                        bottom.linkTo(phone.bottom)
+                            Row(
+                                modifier = Modifier
+                                    .constrainAs(row1){
                                         start.linkTo(parent.start)
                                     }
-                                    .padding(10.dp, 0.dp)
                                     .width(200.dp)
-                                    .wrapContentHeight())
+                                    .height(IntrinsicSize.Min)
+                            ) {
 
-                            Text(text = "${userData.cellnum} / ${userData.phone}",
-                                Modifier
-                                    .constrainAs(phone) {
-                                        top.linkTo(birth.bottom)
-                                        bottom.linkTo(email.bottom)
-                                        start.linkTo(email.end)
-                                        end.linkTo(parent.end)
+                                // use the material divider
+                                Divider(
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .width(1.dp)
+                                )
+
+                                Column {
+
+                                    Text(
+                                        text = "${userData.name.fname} ${userData.name.lname}",
+                                        Modifier
+                                            .padding(5.dp, 0.dp, 2.dp, 2.dp)
+                                            .fillMaxWidth()
+                                            .wrapContentHeight())
+
+                                    Text(
+                                        text = userData.email.toString(),
+                                        Modifier
+                                            .padding(5.dp, 2.dp, 2.dp, 0.dp)
+                                            .fillMaxWidth()
+                                            .wrapContentHeight())
+
+                                }
+                            }
+
+                            Row(
+                                modifier = Modifier
+                                    .constrainAs(row2){
+                                        start.linkTo(row1.end)
                                     }
-                                    .padding(10.dp, 0.dp)
                                     .width(200.dp)
-                                    .wrapContentHeight(),
-                                style = TextStyle(
-                                    textAlign = TextAlign.Center
-                                ))
+                                    .height(IntrinsicSize.Min)
+                            ) {
+
+                                Column {
+
+                                    Text(
+                                        text = DateTimeFormatter.ofPattern("MMMM dd, yyyy")
+                                            .format(
+                                                OffsetDateTime
+                                                    .parse(userData.birth.birthdate.toString())
+                                            ),
+                                        Modifier
+                                            .padding(0.dp, 0.dp, 0.dp, 2.dp)
+                                            .fillMaxWidth()
+                                            .wrapContentHeight())
+
+                                    Text(text = "${userData.cellnum} / ${userData.phone}",
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .wrapContentHeight()
+                                    )
+
+                                }
+                            }
 
                             TextButton(onClick = {
                                 //todo: detail viewing button event, navigate to detail screen
@@ -287,11 +311,12 @@ class MainActivity : ComponentActivity() {
                             },
                                 Modifier
                                     .constrainAs(btn_view) {
-                                        top.linkTo(email.bottom)
-                                        top.linkTo(phone.bottom)
+                                        top.linkTo(row1.bottom)
+                                        start.linkTo(row1.start)
+                                        end.linkTo(row2.end)
                                     }
                                     .fillMaxWidth()
-                                    .padding(0.dp, 10.dp)) {
+                                    .padding(0.dp, 2.dp)) {
 
                                 Text(text = "View Details",
                                     style = TextStyle(
@@ -299,7 +324,9 @@ class MainActivity : ComponentActivity() {
                                         color = MaterialTheme.colorScheme.primary
                                     )
                                 )
+
                             }
+
                         }
 
                     }
@@ -336,9 +363,10 @@ class MainActivity : ComponentActivity() {
                 text = userData.toString(),
                 Modifier
                     .fillMaxSize()
-                    .constrainAs(content){
+                    .constrainAs(content) {
                         top.linkTo(appbar.bottom)
-                    }.padding(0.dp, 5.dp))
+                    }
+                    .padding(0.dp, 5.dp))
 
         }
     }
